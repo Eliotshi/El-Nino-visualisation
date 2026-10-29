@@ -1,0 +1,687 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#F6EEE1">
+<title>Avant nous</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='88'>🧸</text></svg>">
+<style>
+  :root {
+    --bg: #F6EEE1;
+    --card: #FFFBF4;
+    --ink: #3D3128;
+    --muted: #8C7B69;
+    --line: #EADCC6;
+    --soft: #F3E5D1;
+    --accent: #C0684A;
+    --accent-dark: #A6563B;
+    --star: #D99A2B;
+    --star-bg: #FBEFD6;
+    --radius: 28px;
+    --font: ui-rounded, "SF Pro Rounded", "Nunito", "Varela Round", "Quicksand",
+            "Arial Rounded MT Bold", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    min-height: 100vh;
+    min-height: 100dvh;
+    background-color: var(--bg);
+    background-image:
+      radial-gradient(circle at 15% 10%, rgba(255,255,255,.7), transparent 45%),
+      radial-gradient(circle at 85% 90%, rgba(232,206,170,.35), transparent 50%);
+    background-attachment: fixed;
+    color: var(--ink);
+    font-family: var(--font);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
+    overflow-x: hidden;
+  }
+  button, input { font: inherit; color: inherit; }
+  button { cursor: pointer; }
+  [hidden] { display: none !important; }
+
+  .screen {
+    min-height: 100vh;
+    min-height: 100dvh;
+    width: 100%;
+    max-width: 680px;
+    margin: 0 auto;
+    padding: max(24px, env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom));
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 16px;
+  }
+  .card {
+    background: var(--card);
+    border-radius: var(--radius);
+    border: 1px solid rgba(234,220,198,.7);
+    box-shadow: 0 1px 0 #fff inset, 0 22px 50px -24px rgba(110,78,40,.35), 0 2px 6px rgba(110,78,40,.06);
+    padding: clamp(24px, 6vw, 44px);
+  }
+
+  /* ---------- Boutons ---------- */
+  .btn {
+    border: 0;
+    border-radius: 999px;
+    padding: 14px 22px;
+    font-weight: 700;
+    font-size: 1.02rem;
+    background: var(--soft);
+    color: var(--ink);
+    transition: transform .12s ease, background-color .2s ease, opacity .2s ease;
+    touch-action: manipulation;
+  }
+  .btn:hover { background: #EEDCC4; }
+  .btn:active { transform: scale(.97); }
+  .btn:disabled { opacity: .4; cursor: default; transform: none; }
+  .btn.primary { background: var(--accent); color: #fff; box-shadow: 0 8px 18px -10px rgba(166,86,59,.8); }
+  .btn.primary:hover { background: var(--accent-dark); }
+  .btn.big { width: 100%; padding: 17px 22px; font-size: 1.12rem; }
+  .link {
+    background: none; border: 0; padding: 8px 10px;
+    color: var(--muted); font-size: .95rem; text-decoration: underline;
+    text-decoration-color: rgba(140,123,105,.35); text-underline-offset: 3px;
+  }
+  .link:hover { color: var(--ink); }
+  :focus-visible { outline: 3px solid rgba(192,104,74,.45); outline-offset: 2px; }
+
+  /* ---------- Accueil ---------- */
+  .kicker {
+    text-transform: uppercase; letter-spacing: .14em; font-size: .78rem;
+    color: var(--accent); font-weight: 700; margin: 0 0 6px;
+  }
+  h1 {
+    font-size: clamp(2.6rem, 11vw, 3.6rem); line-height: 1.05;
+    margin: 0 0 14px; letter-spacing: -.02em; font-weight: 800;
+  }
+  .intro { color: var(--muted); font-size: 1.06rem; margin: 0 0 26px; }
+  .group { margin: 0 0 22px; border: 0; padding: 0; min-width: 0; }
+  .group-title {
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-weight: 700; font-size: .95rem; margin: 0 0 10px; padding: 0; width: 100%;
+  }
+  .group-title .link { font-size: .85rem; padding: 0; font-weight: 400; }
+
+  .names { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 1.15rem; font-weight: 700; }
+  .names input {
+    flex: 1 1 140px; min-width: 0;
+    border: 2px solid var(--line); background: #fff; border-radius: 14px;
+    padding: 10px 14px; font-weight: 700; font-size: 1.05rem;
+  }
+  .names input:focus { outline: none; border-color: var(--accent); }
+
+  .segmented { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .option input, .chip input { position: absolute; opacity: 0; pointer-events: none; }
+  .option span {
+    display: block; height: 100%;
+    padding: 12px 14px; border-radius: 16px; border: 2px solid var(--line);
+    background: #fff; font-weight: 700; cursor: pointer; transition: all .15s ease;
+  }
+  .option small { display: block; font-weight: 400; color: var(--muted); font-size: .85rem; }
+  .option input:checked + span { border-color: var(--accent); background: #FCF0E8; }
+  .option input:focus-visible + span, .chip input:focus-visible + span { outline: 3px solid rgba(192,104,74,.45); outline-offset: 2px; }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip { position: relative; }
+  .chip span {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 13px; border-radius: 999px; border: 2px solid var(--line);
+    background: #fff; font-size: .93rem; cursor: pointer; transition: all .15s ease; user-select: none;
+    color: var(--muted);
+  }
+  .chip span em { font-style: normal; opacity: .6; font-size: .82rem; }
+  .chip input:checked + span { border-color: var(--accent); background: #FCF0E8; color: var(--ink); }
+
+  .start-zone { margin-top: 28px; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .note { color: var(--muted); font-size: .85rem; text-align: center; margin: 8px 0 0; }
+
+  /* ---------- Question ---------- */
+  .topbar { display: flex; justify-content: space-between; align-items: center; }
+  .topbar .link { padding-left: 0; }
+  .counter { font-weight: 700; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .progress { height: 8px; background: rgba(214,192,160,.35); border-radius: 99px; overflow: hidden; }
+  .progress div { height: 100%; width: 0; background: var(--accent); border-radius: 99px; transition: width .45s cubic-bezier(.2,.7,.2,1); }
+
+  .qcard {
+    min-height: clamp(320px, 52vh, 460px);
+    display: flex; flex-direction: column; justify-content: space-between; gap: 22px;
+    touch-action: pan-y;
+  }
+  .qinner { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 18px; }
+  .qcat { font-size: .9rem; font-weight: 700; color: var(--muted); letter-spacing: .02em; }
+  .question {
+    margin: 0; font-weight: 800; letter-spacing: -.01em;
+    font-size: clamp(1.55rem, 6vw, 2.35rem); line-height: 1.22;
+    text-wrap: balance;
+  }
+  .who {
+    align-self: flex-start;
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--soft); padding: 7px 14px; border-radius: 999px;
+    font-weight: 700; font-size: .95rem;
+  }
+  .qfoot { display: flex; justify-content: flex-end; }
+  .star {
+    border: 2px solid var(--line); background: #fff; border-radius: 999px;
+    padding: 8px 15px; font-weight: 700; font-size: .93rem; color: var(--muted);
+    transition: all .18s ease; touch-action: manipulation;
+  }
+  .star:hover { border-color: #E3C79A; }
+  .star[aria-pressed="true"] { background: var(--star-bg); border-color: var(--star); color: #8A5B10; }
+  .star .ico { display: inline-block; transition: transform .25s cubic-bezier(.3,1.6,.5,1); }
+  .star[aria-pressed="true"] .ico { transform: scale(1.25) rotate(-8deg); }
+
+  .controls { display: grid; grid-template-columns: 1fr 1.4fr; gap: 10px; }
+  .controls .btn { padding: 16px 12px; }
+  .skip-row { text-align: center; margin-top: -6px; }
+  .kbd-hint { color: var(--muted); font-size: .8rem; text-align: center; opacity: .75; margin: 0; }
+  @media (hover: none) { .kbd-hint { display: none; } }
+
+  /* ---------- Fin ---------- */
+  .end { text-align: center; }
+  .end .moon { font-size: 3rem; line-height: 1; margin-bottom: 10px; }
+  .end h2 { font-size: clamp(1.8rem, 7vw, 2.4rem); margin: 0 0 10px; line-height: 1.15; }
+  .end p { color: var(--muted); margin: 0 auto 26px; max-width: 30em; font-size: 1.05rem; }
+  .end h3 { text-align: left; margin: 0 0 10px; font-size: 1.05rem; }
+  .stars-list { list-style: none; padding: 0; margin: 0 0 26px; text-align: left; display: flex; flex-direction: column; gap: 8px; }
+  .stars-list li {
+    display: flex; gap: 10px; align-items: flex-start;
+    background: var(--star-bg); border-radius: 16px; padding: 12px 10px 12px 14px;
+  }
+  .stars-list li span { flex: 1; font-weight: 600; }
+  .stars-list li small { display: block; color: var(--muted); font-weight: 400; font-size: .8rem; }
+  .stars-list .remove { border: 0; background: none; color: var(--muted); font-size: 1.1rem; padding: 0 6px; line-height: 1.4; }
+  .stars-list .remove:hover { color: var(--ink); }
+  .empty { color: var(--muted); text-align: left; margin: 0 0 26px; font-style: italic; }
+
+  @media (max-width: 420px) {
+    .segmented { grid-template-columns: 1fr; }
+    .card { border-radius: 24px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { transition: none !important; animation: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ================= ACCUEIL ================= -->
+<main id="home" class="screen">
+  <div class="card">
+    <p class="kicker">Un jeu pour deux</p>
+    <h1>Avant nous</h1>
+    <p class="intro">100 questions sur l'enfance et le fait de grandir, de la naissance jusqu'à 25 ans. Une question à la fois, on répond chacun à voix haute. Pas de bonne réponse, juste des histoires.</p>
+
+    <div class="group">
+      <label class="group-title" for="name">Qui joue ?</label>
+      <div class="names">
+        <span id="player1"></span><span>&amp;</span>
+        <input id="name" type="text" placeholder="Son prénom" autocomplete="off" maxlength="30">
+      </div>
+    </div>
+
+    <fieldset class="group">
+      <legend class="group-title">Ordre des questions</legend>
+      <div class="segmented">
+        <label class="option">
+          <input type="radio" name="mode" value="ordre">
+          <span>Dans l'ordre<small>de l'enfance à 25 ans</small></span>
+        </label>
+        <label class="option">
+          <input type="radio" name="mode" value="hasard">
+          <span>Au hasard<small>on mélange tout</small></span>
+        </label>
+      </div>
+    </fieldset>
+
+    <fieldset class="group">
+      <legend class="group-title">Catégories <button type="button" id="toggle-all" class="link">Tout décocher</button></legend>
+      <div id="chips" class="chips"></div>
+    </fieldset>
+
+    <div class="start-zone">
+      <button id="start" class="btn primary big" type="button">Commencer</button>
+      <button id="new-game" class="link" type="button" hidden>ou recommencer depuis le début</button>
+      <p id="start-note" class="note" hidden>Choisissez au moins une catégorie 🙂</p>
+    </div>
+  </div>
+</main>
+
+<!-- ================= QUESTION ================= -->
+<main id="play" class="screen" hidden>
+  <div class="topbar">
+    <button id="to-home" class="link" type="button">← Accueil</button>
+    <span id="counter" class="counter">1 / 100</span>
+  </div>
+  <div class="progress" aria-hidden="true"><div id="bar"></div></div>
+
+  <section id="qcard" class="card qcard" aria-live="polite">
+    <div id="qinner" class="qinner">
+      <div id="qcat" class="qcat"></div>
+      <p id="qtext" class="question"></p>
+      <div id="who" class="who"></div>
+    </div>
+    <div class="qfoot">
+      <button id="star" class="star" type="button" aria-pressed="false"><span class="ico">☆</span> On en reparle</button>
+    </div>
+  </section>
+
+  <nav class="controls">
+    <button id="prev" class="btn" type="button">← Précédente</button>
+    <button id="next" class="btn primary" type="button">Suivante →</button>
+  </nav>
+  <div class="skip-row"><button id="skip" class="link" type="button">Passer</button></div>
+  <p class="kbd-hint">← → pour naviguer · espace pour la suivante</p>
+</main>
+
+<!-- ================= FIN ================= -->
+<main id="end" class="screen" hidden>
+  <div class="card end">
+    <div class="moon">🌙</div>
+    <h2>Et voilà, vous avez grandi.</h2>
+    <p id="end-msg"></p>
+    <h3>⭐ On en reparle</h3>
+    <ul id="stars-list" class="stars-list"></ul>
+    <p id="stars-empty" class="empty">Aucune question marquée cette fois-ci.</p>
+    <button id="restart" class="btn primary big" type="button">Recommencer</button>
+  </div>
+</main>
+
+<script>
+/* =========================================================
+   RÉGLAGES — modifiables facilement
+   ========================================================= */
+const JOUEUR_1 = "Eliot";
+const JOUEUR_2_PAR_DEFAUT = ""; // son prénom (modifiable aussi depuis l'écran d'accueil)
+
+const CATEGORIES = [
+  { id: "enfance",  emoji: "🧸", label: "Petite enfance & primaire" },
+  { id: "famille",  emoji: "🏠", label: "Famille & maison" },
+  { id: "college",  emoji: "🎒", label: "Collège" },
+  { id: "lycee",    emoji: "📚", label: "Lycée" },
+  { id: "amities",  emoji: "🤝", label: "Amitiés" },
+  { id: "amour",    emoji: "💌", label: "Amour & premiers émois" },
+  { id: "betises",  emoji: "🙈", label: "Bêtises & hontes" },
+  { id: "18-25",    emoji: "🚀", label: "De 18 à 25 ans" },
+];
+
+const QUESTIONS = [
+  // 🧸 Petite enfance & primaire
+  { cat: "enfance", q: "Quel est ton tout premier souvenir ?" },
+  { cat: "enfance", q: "Tu voulais faire quel métier quand tu étais petit·e ? Pourquoi ?" },
+  { cat: "enfance", q: "C'était quoi ton doudou, et il est où aujourd'hui ?" },
+  { cat: "enfance", q: "Quel dessin animé tu regardais en boucle ?" },
+  { cat: "enfance", q: "Ton jouet préféré, celui que tu aurais sauvé d'un incendie ?" },
+  { cat: "enfance", q: "Tu avais un·e ami·e imaginaire ?" },
+  { cat: "enfance", q: "Ton maître ou ta maîtresse préféré·e en primaire, et pourquoi ?" },
+  { cat: "enfance", q: "Le goûter idéal de ton enfance ?" },
+  { cat: "enfance", q: "Un plat que tu détestais enfant et que tu adores maintenant (ou l'inverse) ?" },
+  { cat: "enfance", q: "De quoi tu avais peur quand tu étais petit·e ?" },
+  { cat: "enfance", q: "Ton meilleur anniversaire d'enfance ?" },
+  { cat: "enfance", q: "Le jeu de cour de récré où tu étais le/la plus fort·e ?" },
+  { cat: "enfance", q: "Tu collectionnais quoi ? (cartes, billes, Pokémon…)" },
+  { cat: "enfance", q: "Une fois où tu t'es perdu·e ou où tu as eu très peur ?" },
+  { cat: "enfance", q: "Tu as cru au Père Noël jusqu'à quel âge, et comment tu as découvert la vérité ?" },
+
+  // 🏠 Famille & maison
+  { cat: "famille", q: "Décris ta chambre d'enfant en trois détails." },
+  { cat: "famille", q: "Les vacances d'été typiques de ta famille ?" },
+  { cat: "famille", q: "Un rituel familial que tu adorais ?" },
+  { cat: "famille", q: "Le plat d'un parent ou d'un grand-parent qui te manque le plus ?" },
+  { cat: "famille", q: "Tu étais l'enfant sage ou l'enfant pénible de la famille ?" },
+  { cat: "famille", q: "Ta pire dispute avec un frère, une sœur ou un cousin ?" },
+  { cat: "famille", q: "Un souvenir avec un grand-parent que tu gardes précieusement ?" },
+  { cat: "famille", q: "La punition la plus marquante que tu as reçue ?" },
+  { cat: "famille", q: "Tu avais un animal de compagnie ? Raconte-le." },
+  { cat: "famille", q: "La phrase que tes parents répétaient tout le temps ?" },
+  { cat: "famille", q: "Une tradition de Noël ou de fête chez toi ?" },
+  { cat: "famille", q: "Le plus long trajet en voiture de ton enfance, et comment tu t'occupais ?" },
+
+  // 🎒 Collège
+  { cat: "college", q: "C'était quoi ta matière préférée au collège, et pourquoi ? Un souvenir lié ?" },
+  { cat: "college", q: "Et celle que tu détestais ?" },
+  { cat: "college", q: "Le prof qui t'a marqué·e, en bien ou en mal ?" },
+  { cat: "college", q: "Tu étais qui dans la classe : le bon élève, le clown, le discret, le rebelle ?" },
+  { cat: "college", q: "Ton look au collège : décris-le sans pitié." },
+  { cat: "college", q: "Ton premier téléphone portable : quel modèle, et tu en faisais quoi ?" },
+  { cat: "college", q: "La musique que tu écoutais en boucle à 13 ans ?" },
+  { cat: "college", q: "Ton premier voyage scolaire ?" },
+  { cat: "college", q: "Tu as déjà été collé·e ? Pour quoi ?" },
+  { cat: "college", q: "Ton pseudo MSN, ou ton premier compte sur un réseau social ?" },
+  { cat: "college", q: "Une humiliation de collège dont tu te souviens encore ?" },
+  { cat: "college", q: "Ton ou ta meilleur·e ami·e au collège : vous en êtes où aujourd'hui ?" },
+  { cat: "college", q: "Le sport ou l'activité que tu faisais après les cours ?" },
+  { cat: "college", q: "La série ou l'émission dont tout le monde parlait à la récré ?" },
+  { cat: "college", q: "Qu'est-ce que tu faisais en rentrant du collège ?" },
+
+  // 📚 Lycée
+  { cat: "lycee", q: "Ta filière ou tes spécialités : c'était un choix ou un hasard ?" },
+  { cat: "lycee", q: "Ta bande au lycée : qui, et c'était quoi votre spot ?" },
+  { cat: "lycee", q: "Ta première soirée « de grands » ?" },
+  { cat: "lycee", q: "Le prof le plus mémorable du lycée ?" },
+  { cat: "lycee", q: "Le bac : stress, flemme ou sérénité ? Une anecdote ?" },
+  { cat: "lycee", q: "La note ou la réussite dont tu étais le/la plus fier·e ?" },
+  { cat: "lycee", q: "Ta première cuite, ou ton premier lendemain difficile ?" },
+  { cat: "lycee", q: "Le concert ou le festival le plus marquant de ton adolescence ?" },
+  { cat: "lycee", q: "Ton premier job (baby-sitting, job d'été, petit boulot) ?" },
+  { cat: "lycee", q: "La première fois où tu t'es senti·e vraiment adulte ?" },
+  { cat: "lycee", q: "Une passion de lycée que tu as abandonnée ?" },
+  { cat: "lycee", q: "Les vacances entre potes qui ont tout changé ?" },
+  { cat: "lycee", q: "À 16 ans, tu te voyais où à 25 ans ?" },
+  { cat: "lycee", q: "Ta plus grosse engueulade avec tes parents à l'adolescence ?" },
+  { cat: "lycee", q: "Le truc dont tu étais le/la plus fier·e au lycée ?" },
+
+  // 🤝 Amitiés
+  { cat: "amities", q: "L'ami·e d'enfance que tu aimerais retrouver ?" },
+  { cat: "amities", q: "Une amitié qui s'est terminée et qui t'a fait de la peine ?" },
+  { cat: "amities", q: "Le plus gros fou rire de ta jeunesse ?" },
+  { cat: "amities", q: "Un secret que tu as gardé pour un·e ami·e (sans le révéler) ?" },
+  { cat: "amities", q: "La personne qui t'a le plus influencé·e entre 10 et 20 ans, hors parents ?" },
+  { cat: "amities", q: "Ton meilleur souvenir de colo, de camp ou de vacances sans les parents ?" },
+  { cat: "amities", q: "Tu as déjà fait partie d'un groupe, d'une équipe ou d'une troupe ? Raconte." },
+  { cat: "amities", q: "Une fois où un·e ami·e t'a vraiment sauvé la mise ?" },
+
+  // 💌 Amour & premiers émois
+  { cat: "amour", q: "C'était où ton premier bisou ? Avec qui, et c'était comment ?" },
+  { cat: "amour", q: "Ton premier crush : qui, à quel âge, et est-ce qu'il ou elle l'a su ?" },
+  { cat: "amour", q: "Ta première relation « officielle » ?" },
+  { cat: "amour", q: "La déclaration la plus ratée de ta jeunesse (la tienne ou celle qu'on t'a faite) ?" },
+  { cat: "amour", q: "Ton crush de célébrité quand tu étais ado ?" },
+  { cat: "amour", q: "Ta première rupture : qui a quitté qui ?" },
+  { cat: "amour", q: "Le message ou la lettre d'amour la plus gênante que tu as envoyée ?" },
+  { cat: "amour", q: "Un slow, une soirée, un moment où ton cœur battait beaucoup trop fort ?" },
+  { cat: "amour", q: "Ce que tu pensais de l'amour à 15 ans, comparé à maintenant ?" },
+  { cat: "amour", q: "Ton râteau le plus mémorable ?" },
+
+  // 🙈 Bêtises & hontes
+  { cat: "betises", q: "La plus grosse bêtise que tu as faite enfant ?" },
+  { cat: "betises", q: "Un mensonge à tes parents qu'ils n'ont jamais découvert ?" },
+  { cat: "betises", q: "Ta pire coupe de cheveux ?" },
+  { cat: "betises", q: "Une phase dont tu as un peu honte (emo, tecktonik, skater…) ?" },
+  { cat: "betises", q: "Un objet que tu as cassé sans jamais l'avouer ?" },
+  { cat: "betises", q: "Le moment le plus gênant de ta scolarité ?" },
+  { cat: "betises", q: "Tu as déjà séché les cours ? Pour faire quoi ?" },
+  { cat: "betises", q: "Ta pire blessure, ou ton passage aux urgences le plus mémorable ?" },
+  { cat: "betises", q: "Ta plus grosse transgression d'ado (racontable) ?" },
+  { cat: "betises", q: "Une photo de toi que tu aimerais voir disparaître de l'album de famille ?" },
+
+  // 🚀 De 18 à 25 ans
+  { cat: "18-25", q: "Ton premier appart ou ta première chambre loin de chez tes parents ?" },
+  { cat: "18-25", q: "Le premier vrai repas que tu as su cuisiner seul·e ?" },
+  { cat: "18-25", q: "Ton orientation après le bac : un choix assumé ou un détour ?" },
+  { cat: "18-25", q: "La meilleure soirée de tes années étudiantes ?" },
+  { cat: "18-25", q: "Un voyage entre 18 et 25 ans qui t'a transformé·e ?" },
+  { cat: "18-25", q: "Ta plus belle galère d'argent ?" },
+  { cat: "18-25", q: "La décision la plus courageuse que tu as prise avant 25 ans ?" },
+  { cat: "18-25", q: "Une rencontre qui a changé ta trajectoire ?" },
+  { cat: "18-25", q: "Le moment où tu as compris que tes parents étaient des humains comme les autres ?" },
+  { cat: "18-25", q: "Une chose que tu aurais aimé savoir à 18 ans ?" },
+  { cat: "18-25", q: "La chanson qui résume tes 20 ans ?" },
+  { cat: "18-25", q: "Un échec qui t'a finalement servi ?" },
+  { cat: "18-25", q: "Le conseil que tu donnerais à toi-même à 12 ans ?" },
+  { cat: "18-25", q: "Qu'est-ce que l'enfant que tu étais penserait de la personne que tu es aujourd'hui ?" },
+  { cat: "18-25", q: "Le souvenir d'enfance que tu aimerais me faire vivre ?" },
+];
+
+/* =========================================================
+   État + sauvegarde (localStorage)
+   ========================================================= */
+const STORE_KEY = "avant-nous-v1";
+const CAT_BY_ID = Object.fromEntries(CATEGORIES.map(c => [c.id, c]));
+
+const state = {
+  mode: "ordre",                         // "ordre" | "hasard"
+  cats: CATEGORIES.map(c => c.id),        // catégories cochées
+  seq: null,                              // indices des questions de la partie en cours
+  pos: 0,                                 // position dans seq
+  stars: [],                              // indices des questions marquées ⭐
+  name: JOUEUR_2_PAR_DEFAUT,
+};
+
+function load() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORE_KEY) || "null");
+    if (!saved || typeof saved !== "object") return;
+    const validIdx = i => Number.isInteger(i) && i >= 0 && i < QUESTIONS.length;
+    if (saved.mode === "ordre" || saved.mode === "hasard") state.mode = saved.mode;
+    if (Array.isArray(saved.cats)) state.cats = saved.cats.filter(id => CAT_BY_ID[id]);
+    if (Array.isArray(saved.seq)) state.seq = saved.seq.filter(validIdx);
+    if (Number.isInteger(saved.pos)) state.pos = saved.pos;
+    if (Array.isArray(saved.stars)) state.stars = saved.stars.filter(validIdx);
+    if (typeof saved.name === "string") state.name = saved.name;
+    if (!state.seq || !state.seq.length) { state.seq = null; state.pos = 0; }
+    else state.pos = Math.max(0, Math.min(state.pos, state.seq.length));
+  } catch (e) { /* stockage indisponible : on joue sans sauvegarde */ }
+}
+
+function save() {
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) { /* tant pis */ }
+}
+
+const inProgress = () => !!state.seq && state.pos < state.seq.length;
+const player2 = () => state.name.trim() || "Elle";
+
+/* =========================================================
+   Écrans
+   ========================================================= */
+const $ = id => document.getElementById(id);
+const screens = { home: $("home"), play: $("play"), end: $("end") };
+let current = "home";
+
+function show(name) {
+  current = name;
+  for (const [key, el] of Object.entries(screens)) el.hidden = key !== name;
+  window.scrollTo(0, 0);
+}
+
+/* ---------- Accueil ---------- */
+function renderHome() {
+  $("player1").textContent = JOUEUR_1;
+  $("name").value = state.name;
+  document.querySelectorAll('input[name="mode"]').forEach(r => { r.checked = r.value === state.mode; });
+
+  const chips = $("chips");
+  chips.innerHTML = "";
+  for (const c of CATEGORIES) {
+    const count = QUESTIONS.filter(q => q.cat === c.id).length;
+    const label = document.createElement("label");
+    label.className = "chip";
+    label.innerHTML = `<input type="checkbox" value="${c.id}"><span>${c.emoji} ${c.label} <em>${count}</em></span>`;
+    const box = label.querySelector("input");
+    box.checked = state.cats.includes(c.id);
+    box.addEventListener("change", () => {
+      state.cats = CATEGORIES.map(x => x.id).filter(id =>
+        chips.querySelector(`input[value="${id}"]`).checked);
+      save();
+      updateStartButton();
+    });
+    chips.appendChild(label);
+  }
+  updateStartButton();
+  show("home");
+}
+
+function updateStartButton() {
+  const none = state.cats.length === 0;
+  const total = QUESTIONS.filter(q => state.cats.includes(q.cat)).length;
+  $("toggle-all").textContent = none ? "Tout cocher" : "Tout décocher";
+
+  if (inProgress()) {
+    $("start").textContent = `Reprendre à la question ${state.pos + 1}`;
+    $("start").disabled = false;
+    $("new-game").hidden = none;
+    $("new-game").textContent = `ou nouvelle partie avec ces réglages (${total} questions)`;
+  } else {
+    $("start").textContent = none ? "Commencer" : `Commencer · ${total} questions`;
+    $("start").disabled = none;
+    $("new-game").hidden = true;
+  }
+  $("start-note").hidden = !none;
+}
+
+function startNewGame() {
+  let seq = QUESTIONS.map((_, i) => i).filter(i => state.cats.includes(QUESTIONS[i].cat));
+  if (!seq.length) return;
+  if (state.mode === "hasard") {
+    for (let i = seq.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [seq[i], seq[j]] = [seq[j], seq[i]];
+    }
+  }
+  state.seq = seq;
+  state.pos = 0;
+  save();
+  show("play");
+  renderQuestion(0);
+}
+
+/* ---------- Question ---------- */
+function renderQuestion(dir) {
+  const idx = state.seq[state.pos];
+  const item = QUESTIONS[idx];
+  const cat = CAT_BY_ID[item.cat] || { emoji: "💬", label: item.cat };
+  const total = state.seq.length;
+
+  $("qcat").textContent = `${cat.emoji}  ${cat.label}`;
+  $("qtext").textContent = item.q;
+  $("who").textContent = `🎙️ ${state.pos % 2 === 0 ? JOUEUR_1 : player2()} commence`;
+  $("counter").textContent = `${state.pos + 1} / ${total}`;
+  $("bar").style.width = `${((state.pos + 1) / total) * 100}%`;
+  $("prev").disabled = state.pos === 0;
+  $("next").textContent = state.pos === total - 1 ? "Terminer →" : "Suivante →";
+
+  const starred = state.stars.includes(idx);
+  $("star").setAttribute("aria-pressed", String(starred));
+  $("star").querySelector(".ico").textContent = starred ? "⭐" : "☆";
+
+  const el = $("qinner");
+  if (dir && el.animate && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    el.getAnimations().forEach(a => a.cancel());
+    el.animate(
+      [{ opacity: 0, transform: `translateX(${dir * 28}px)` }, { opacity: 1, transform: "none" }],
+      { duration: 380, easing: "cubic-bezier(.2,.7,.2,1)" }
+    );
+  }
+}
+
+function go(delta) {
+  if (current !== "play" || !state.seq) return;
+  const target = state.pos + delta;
+  if (target < 0) return;
+  state.pos = target;
+  save();
+  if (target >= state.seq.length) renderEnd();
+  else renderQuestion(delta);
+}
+
+function toggleStar() {
+  const idx = state.seq[state.pos];
+  const i = state.stars.indexOf(idx);
+  if (i >= 0) state.stars.splice(i, 1); else state.stars.push(idx);
+  save();
+  renderQuestion(0);
+}
+
+/* ---------- Fin ---------- */
+function renderEnd() {
+  const n = state.seq ? state.seq.length : 0;
+  $("end-msg").textContent =
+    `${n} question${n > 1 ? "s" : ""} pour remonter de la naissance à 25 ans. ` +
+    `Il reste sûrement plein d'histoires à se raconter… mais maintenant, il y a « nous ». 💛`;
+
+  const list = $("stars-list");
+  list.innerHTML = "";
+  for (const idx of state.stars) {
+    const item = QUESTIONS[idx];
+    const cat = CAT_BY_ID[item.cat] || { emoji: "💬", label: item.cat };
+    const li = document.createElement("li");
+    const text = document.createElement("span");
+    text.textContent = item.q;
+    const small = document.createElement("small");
+    small.textContent = `${cat.emoji} ${cat.label}`;
+    text.prepend(small);
+    const rm = document.createElement("button");
+    rm.className = "remove";
+    rm.type = "button";
+    rm.title = "C'est bon, on en a reparlé";
+    rm.setAttribute("aria-label", "Retirer de la liste");
+    rm.textContent = "✕";
+    rm.addEventListener("click", () => {
+      state.stars = state.stars.filter(s => s !== idx);
+      save();
+      renderEnd();
+    });
+    li.append(text, rm);
+    list.appendChild(li);
+  }
+  $("stars-empty").hidden = state.stars.length > 0;
+  list.hidden = state.stars.length === 0;
+  show("end");
+}
+
+/* =========================================================
+   Événements
+   ========================================================= */
+$("name").addEventListener("input", e => { state.name = e.target.value; save(); });
+
+document.querySelectorAll('input[name="mode"]').forEach(r =>
+  r.addEventListener("change", () => { state.mode = r.value; save(); }));
+
+$("toggle-all").addEventListener("click", () => {
+  state.cats = state.cats.length ? [] : CATEGORIES.map(c => c.id);
+  save();
+  renderHome();
+});
+
+$("start").addEventListener("click", () => {
+  if (inProgress()) { show("play"); renderQuestion(1); }
+  else startNewGame();
+});
+$("new-game").addEventListener("click", startNewGame);
+
+$("to-home").addEventListener("click", renderHome);
+$("prev").addEventListener("click", e => { e.currentTarget.blur(); go(-1); });
+$("next").addEventListener("click", e => { e.currentTarget.blur(); go(1); });
+$("skip").addEventListener("click", e => { e.currentTarget.blur(); go(1); });
+$("star").addEventListener("click", e => { e.currentTarget.blur(); toggleStar(); });
+
+$("restart").addEventListener("click", () => {
+  state.seq = null;
+  state.pos = 0;
+  save();
+  renderHome();
+});
+
+document.addEventListener("keydown", e => {
+  if (current !== "play" || e.altKey || e.ctrlKey || e.metaKey) return;
+  if (e.target.matches && e.target.matches("input, textarea")) return;
+  if (e.key === "ArrowRight" || e.key === " " || e.key === "Spacebar") { e.preventDefault(); go(1); }
+  else if (e.key === "ArrowLeft") { e.preventDefault(); go(-1); }
+});
+
+// Swipe sur téléphone : glisser vers la gauche = suivante, vers la droite = précédente
+let touchStart = null;
+$("qcard").addEventListener("touchstart", e => {
+  const t = e.changedTouches[0];
+  touchStart = { x: t.clientX, y: t.clientY };
+}, { passive: true });
+$("qcard").addEventListener("touchend", e => {
+  if (!touchStart) return;
+  const t = e.changedTouches[0];
+  const dx = t.clientX - touchStart.x, dy = t.clientY - touchStart.y;
+  touchStart = null;
+  if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) go(dx < 0 ? 1 : -1);
+}, { passive: true });
+
+/* =========================================================
+   Démarrage
+   ========================================================= */
+load();
+renderHome();
+</script>
+</body>
+</html>
