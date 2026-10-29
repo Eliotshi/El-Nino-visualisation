@@ -8,6 +8,7 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='88'>🧸</text></svg>">
 <style>
   :root {
+    color-scheme: light;
     --bg: #F6EEE1;
     --card: #FFFBF4;
     --ink: #3D3128;
@@ -214,7 +215,7 @@
   <div class="card">
     <p class="kicker">Un jeu pour deux</p>
     <h1>Avant nous</h1>
-    <p class="intro">100 questions sur l'enfance et le fait de grandir, de la naissance jusqu'à 25 ans. Une question à la fois, on répond chacun à voix haute. Pas de bonne réponse, juste des histoires.</p>
+    <p id="intro" class="intro">Des questions sur l'enfance et le fait de grandir, de la naissance jusqu'à 25 ans. Une question à la fois, on répond chacun à voix haute. Pas de bonne réponse, juste des histoires.</p>
 
     <div class="group">
       <label class="group-title" for="name">Qui joue ?</label>
@@ -307,6 +308,11 @@ const CATEGORIES = [
   { id: "amour",    emoji: "💌", label: "Amour & premiers émois" },
   { id: "betises",  emoji: "🙈", label: "Bêtises & hontes" },
   { id: "18-25",    emoji: "🚀", label: "De 18 à 25 ans" },
+  { id: "dessins",  emoji: "📺", label: "Dessins animés" },
+  { id: "films",    emoji: "🎬", label: "Films & séries" },
+  { id: "disney",   emoji: "🏰", label: "Univers Disney" },
+  { id: "bouffe",   emoji: "🍝", label: "Nourriture" },
+  { id: "smut",     emoji: "🌶️", label: "Smut & romances" },
 ];
 
 const QUESTIONS = [
@@ -425,6 +431,59 @@ const QUESTIONS = [
   { cat: "18-25", q: "Le conseil que tu donnerais à toi-même à 12 ans ?" },
   { cat: "18-25", q: "Qu'est-ce que l'enfant que tu étais penserait de la personne que tu es aujourd'hui ?" },
   { cat: "18-25", q: "Le souvenir d'enfance que tu aimerais me faire vivre ?" },
+
+  // 📺 Dessins animés
+  { cat: "dessins", q: "Le générique de dessin animé que tu connais encore par cœur ? Chante-le." },
+  { cat: "dessins", q: "Le personnage de dessin animé dont tu étais secrètement amoureux·se ?" },
+  { cat: "dessins", q: "Gulli, Canal J, Disney Channel, TF1 le mercredi matin… c'était quoi ta chaîne ?" },
+  { cat: "dessins", q: "Le dessin animé qui t'a fait peur ou qui t'a traumatisé·e ?" },
+  { cat: "dessins", q: "Le personnage de dessin animé à qui tu ressemblais le plus enfant ?" },
+  { cat: "dessins", q: "Un dessin animé que tu adorais et que personne autour de toi ne connaissait ?" },
+  { cat: "dessins", q: "Les mangas ou les animés de ton adolescence ?" },
+  { cat: "dessins", q: "Si tu pouvais vivre une journée dans un dessin animé, ce serait lequel ?" },
+
+  // 🎬 Films & séries
+  { cat: "films", q: "Le premier film que tu as vu au cinéma ?" },
+  { cat: "films", q: "Le film que tu as regardé tellement de fois que tu connais les répliques par cœur ?" },
+  { cat: "films", q: "Le film qui t'a fait le plus pleurer quand tu étais ado ?" },
+  { cat: "films", q: "Le film d'horreur que tu as regardé beaucoup trop jeune ?" },
+  { cat: "films", q: "Le film que tu as vu en cachette alors que tu n'avais pas le droit ?" },
+  { cat: "films", q: "La série que tu as binge-watchée au point d'oublier de dormir ?" },
+  { cat: "films", q: "Le personnage de film ou de série auquel tu t'es le plus identifié·e en grandissant ?" },
+  { cat: "films", q: "Le film « culte » que tout le monde a vu sauf toi ?" },
+  { cat: "films", q: "Le film de ton enfance que tu aimerais me faire regarder ?" },
+
+  // 🏰 Univers Disney
+  { cat: "disney", q: "Ton Disney préféré enfant, et est-ce que c'est toujours le même aujourd'hui ?" },
+  { cat: "disney", q: "La princesse ou le héros Disney que tu voulais être ?" },
+  { cat: "disney", q: "Le méchant Disney qui te terrifiait (ou que tu trouvais trop classe) ?" },
+  { cat: "disney", q: "La chanson Disney que tu peux chanter en entier sans les paroles ?" },
+  { cat: "disney", q: "La mort Disney qui t'a le plus traumatisé·e (Mufasa, la mère de Bambi…) ?" },
+  { cat: "disney", q: "Tu es déjà allé·e à Disneyland ? Raconte ton souvenir le plus fort." },
+  { cat: "disney", q: "La cassette VHS Disney que tu as usée à force de la regarder ?" },
+  { cat: "disney", q: "Quel acolyte Disney tu aurais voulu avoir comme meilleur ami (Timon, Olaf, Stitch…) ?" },
+  { cat: "disney", q: "Si notre couple était un film Disney, ce serait lequel ?" },
+
+  // 🍝 Nourriture
+  { cat: "bouffe", q: "Le plat que tu réclamais pour ton anniversaire ?" },
+  { cat: "bouffe", q: "La cantine : ton meilleur et ton pire plat ?" },
+  { cat: "bouffe", q: "Le bonbon ou la friandise de ton enfance qui n'existe plus (ou presque) ?" },
+  { cat: "bouffe", q: "Les céréales de ton petit-déjeuner d'enfance ?" },
+  { cat: "bouffe", q: "Ta pire expérience culinaire (intoxication, plat raté, truc immangeable) ?" },
+  { cat: "bouffe", q: "Le combo bizarre que tu manges depuis toujours et que personne ne comprend ?" },
+  { cat: "bouffe", q: "Le premier plat « exotique » que tu as goûté et qui t'a marqué·e ?" },
+  { cat: "bouffe", q: "Ton repas typique d'étudiant·e fauché·e ?" },
+  { cat: "bouffe", q: "Le fast-food ou le resto où tu traînais avec tes potes ado ?" },
+
+  // 🌶️ Smut & romances
+  { cat: "smut", q: "Le premier livre un peu « hot » que tu as lu en cachette ?" },
+  { cat: "smut", q: "La scène de film trop chaude tombée pile quand tu regardais avec tes parents ?" },
+  { cat: "smut", q: "Fanfictions, Wattpad, romances, BookTok : tu en lisais ? Avoue tout." },
+  { cat: "smut", q: "Ton trope romantique préféré (ennemis devenus amants, faux couple, slow burn…) ?" },
+  { cat: "smut", q: "Le personnage fictif qui t'a fait un peu trop d'effet quand tu étais jeune ?" },
+  { cat: "smut", q: "La lecture ou la scène gênante sur laquelle tu t'es fait prendre ?" },
+  { cat: "smut", q: "Le livre ou le film romantique qui a (trop) influencé ta vision de l'amour ?" },
+  { cat: "smut", q: "Une scène ou un livre un peu spicy que tu aimerais qu'on découvre ensemble ?" },
 ];
 
 /* =========================================================
@@ -480,6 +539,7 @@ function show(name) {
 
 /* ---------- Accueil ---------- */
 function renderHome() {
+  $("intro").textContent = `${QUESTIONS.length} questions sur l'enfance et le fait de grandir, de la naissance jusqu'à 25 ans, avec un détour par les dessins animés, Disney, les films, la bouffe et les lectures un peu spicy. Une question à la fois, on répond chacun à voix haute. Pas de bonne réponse, juste des histoires.`;
   $("player1").textContent = JOUEUR_1;
   $("name").value = state.name;
   document.querySelectorAll('input[name="mode"]').forEach(r => { r.checked = r.value === state.mode; });
@@ -590,7 +650,7 @@ function toggleStar() {
 function renderEnd() {
   const n = state.seq ? state.seq.length : 0;
   $("end-msg").textContent =
-    `${n} question${n > 1 ? "s" : ""} pour remonter de la naissance à 25 ans. ` +
+    `${n} question${n > 1 ? "s" : ""} pour remonter le temps ensemble. ` +
     `Il reste sûrement plein d'histoires à se raconter… mais maintenant, il y a « nous ». 💛`;
 
   const list = $("stars-list");
