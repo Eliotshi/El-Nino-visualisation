@@ -91,6 +91,13 @@
   :focus-visible { outline: 3px solid rgba(192,104,74,.45); outline-offset: 2px; }
 
   /* ---------- Accueil ---------- */
+  .home-top { display: flex; justify-content: space-between; align-items: center; gap: 8px 12px; flex-wrap: wrap; margin-bottom: 10px; }
+  .home-top .kicker { margin: 0; }
+  .open-link {
+    font-size: .88rem; font-weight: 700; color: var(--accent); text-decoration: none;
+    border: 2px solid var(--line); border-radius: 999px; padding: 5px 12px; background: #fff;
+  }
+  .open-link:hover { border-color: var(--accent); }
   .kicker {
     text-transform: uppercase; letter-spacing: .14em; font-size: .78rem;
     color: var(--accent); font-weight: 700; margin: 0 0 6px;
@@ -143,6 +150,11 @@
   /* ---------- Question ---------- */
   .topbar { display: flex; justify-content: space-between; align-items: center; }
   .topbar .link { padding-left: 0; }
+  .topbar-right { display: flex; align-items: center; gap: 14px; }
+  .stars-pill {
+    border: 0; background: var(--star-bg); color: #8A5B10; border-radius: 999px;
+    padding: 4px 11px; font-weight: 700; font-size: .9rem; font-variant-numeric: tabular-nums;
+  }
   .counter { font-weight: 700; color: var(--muted); font-variant-numeric: tabular-nums; }
   .progress { height: 8px; background: rgba(214,192,160,.35); border-radius: 99px; overflow: hidden; }
   .progress div { height: 100%; width: 0; background: var(--accent); border-radius: 99px; transition: width .45s cubic-bezier(.2,.7,.2,1); }
@@ -213,7 +225,10 @@
 <!-- ================= ACCUEIL ================= -->
 <main id="home" class="screen">
   <div class="card">
-    <p class="kicker">Un jeu pour deux</p>
+    <div class="home-top">
+      <p class="kicker">Un jeu pour deux</p>
+      <a id="open-window" class="open-link" href="https://claude.ai/artifact/V6g52TXHpxhLJfTsMZsbjC" target="_blank" rel="noopener" hidden>↗ Ouvrir dans une nouvelle fenêtre</a>
+    </div>
     <h1>Avant nous</h1>
     <p id="intro" class="intro">Des questions sur l'enfance et le fait de grandir, de la naissance jusqu'à 25 ans. Une question à la fois, on répond chacun à voix haute. Pas de bonne réponse, juste des histoires.</p>
 
@@ -248,6 +263,7 @@
       <button id="start" class="btn primary big" type="button">Commencer</button>
       <button id="new-game" class="link" type="button" hidden>ou recommencer depuis le début</button>
       <p id="start-note" class="note" hidden>Choisissez au moins une catégorie 🙂</p>
+      <button id="see-stars" class="link" type="button" hidden></button>
     </div>
   </div>
 </main>
@@ -256,7 +272,10 @@
 <main id="play" class="screen" hidden>
   <div class="topbar">
     <button id="to-home" class="link" type="button">← Accueil</button>
-    <span id="counter" class="counter">1 / 100</span>
+    <div class="topbar-right">
+      <button id="stars-count" class="stars-pill" type="button" title="Voir nos questions étoilées" hidden></button>
+      <span id="counter" class="counter">1 / 100</span>
+    </div>
   </div>
   <div class="progress" aria-hidden="true"><div id="bar"></div></div>
 
@@ -282,13 +301,16 @@
 <!-- ================= FIN ================= -->
 <main id="end" class="screen" hidden>
   <div class="card end">
-    <div class="moon">🌙</div>
-    <h2>Et voilà, vous avez grandi.</h2>
-    <p id="end-msg"></p>
+    <div id="end-head">
+      <div class="moon">🌙</div>
+      <h2>Et voilà, vous avez grandi.</h2>
+      <p id="end-msg"></p>
+    </div>
     <h3>⭐ On en reparle</h3>
     <ul id="stars-list" class="stars-list"></ul>
-    <p id="stars-empty" class="empty">Aucune question marquée cette fois-ci.</p>
+    <p id="stars-empty" class="empty">Aucune question marquée pour l'instant. Pendant le jeu, touchez « ☆ On en reparle » pour garder une question ici.</p>
     <button id="restart" class="btn primary big" type="button">Recommencer</button>
+    <button id="stars-back" class="btn big" type="button" hidden>← Retour</button>
   </div>
 </main>
 
@@ -562,6 +584,9 @@ function renderHome() {
     chips.appendChild(label);
   }
   updateStartButton();
+  $("open-window").hidden = location.protocol === "file:";
+  $("see-stars").hidden = state.stars.length === 0;
+  $("see-stars").textContent = `⭐ Voir nos questions à reparler (${state.stars.length})`;
   show("home");
 }
 
@@ -617,6 +642,8 @@ function renderQuestion(dir) {
   const starred = state.stars.includes(idx);
   $("star").setAttribute("aria-pressed", String(starred));
   $("star").querySelector(".ico").textContent = starred ? "⭐" : "☆";
+  $("stars-count").hidden = state.stars.length === 0;
+  $("stars-count").textContent = `⭐ ${state.stars.length}`;
 
   const el = $("qinner");
   if (dir && el.animate && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
@@ -646,8 +673,16 @@ function toggleStar() {
   renderQuestion(0);
 }
 
-/* ---------- Fin ---------- */
-function renderEnd() {
+/* ---------- Fin / liste des ⭐ ----------
+   renderEnd()       → écran de fin de partie
+   renderEnd("home") → juste la liste des ⭐, avec retour à l'accueil
+   renderEnd("play") → juste la liste des ⭐, avec retour à la question */
+let starsReturn = null;
+function renderEnd(from) {
+  starsReturn = from || null;
+  $("end-head").hidden = !!from;
+  $("restart").hidden = !!from;
+  $("stars-back").hidden = !from;
   const n = state.seq ? state.seq.length : 0;
   $("end-msg").textContent =
     `${n} question${n > 1 ? "s" : ""} pour remonter le temps ensemble. ` +
@@ -673,7 +708,7 @@ function renderEnd() {
     rm.addEventListener("click", () => {
       state.stars = state.stars.filter(s => s !== idx);
       save();
-      renderEnd();
+      renderEnd(from);
     });
     li.append(text, rm);
     list.appendChild(li);
@@ -708,6 +743,13 @@ $("prev").addEventListener("click", e => { e.currentTarget.blur(); go(-1); });
 $("next").addEventListener("click", e => { e.currentTarget.blur(); go(1); });
 $("skip").addEventListener("click", e => { e.currentTarget.blur(); go(1); });
 $("star").addEventListener("click", e => { e.currentTarget.blur(); toggleStar(); });
+
+$("see-stars").addEventListener("click", () => renderEnd("home"));
+$("stars-count").addEventListener("click", e => { e.currentTarget.blur(); renderEnd("play"); });
+$("stars-back").addEventListener("click", () => {
+  if (starsReturn === "play" && inProgress()) { show("play"); renderQuestion(0); }
+  else renderHome();
+});
 
 $("restart").addEventListener("click", () => {
   state.seq = null;
